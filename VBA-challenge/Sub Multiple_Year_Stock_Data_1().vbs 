@@ -1,0 +1,166 @@
+Sub Multiple_Year_Stock_Data_1()
+
+'looping through all sheets in the workbook
+For Each ws In Worksheets
+
+
+'Declaring variables
+ 
+        Dim i As Long 
+        Dim j As Long
+        Dim TickerSymbolCount As Long
+        Dim Summary_Table_Row As Long
+        Dim Ticker_total As Long
+        Dim Greatperincr As Double
+        Dim GreatperDecr As Double
+        Dim percentchange As Double
+        Dim GreatTotVol As Double
+        Dim WorksheetName As String
+        
+        'Assigning the WorksheetName
+        WorksheetName = ws.Name
+ 
+ 
+       'Creating headers on column for relevant sheet
+        ws.Cells(1, 11).Value = "Ticker"
+        ws.Cells(1, 12).Value = "Yearly Change"
+        ws.Cells(1, 13).Value = "Percent Change"
+        ws.Cells(1, 14).Value = "Total Stock Volume"
+        ws.Cells(1, 18).Value = "Ticker"
+        ws.Cells(1, 19).Value = "Value"
+        ws.Cells(2, 17).Value = "Greatest % Increase"
+        ws.Cells(3, 17).Value = "Greatest % Decrease"
+        ws.Cells(4, 17).Value = "Greatest Total Volume"
+        
+        'Ticker counter is set
+         TickerSymbolCount = 2
+         j = 2
+         
+         'Counting information cell in ticker column
+         Summary_Table_Row = ws.Cells(Rows.Count, 1).End(xlUp).Row
+         
+         
+         
+         ' Looping all Ticker
+           For i = 2 To Summary_Table_Row
+           
+                 'Checking range ticker,with conditions if...then
+                    If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+           
+                'Write ticker in column I
+                ws.Cells(TickerSymbolCount, 11).Value = ws.Cells(i, 1).Value
+                
+                
+                    'Calculating and printing Yearly Change
+                    ws.Cells(TickerSymbolCount, 12).Value = ws.Cells(i, 6).Value - ws.Cells(j, 3).Value
+                
+                    'Conditional formating
+                    If ws.Cells(TickerSymbolCount, 12).Value < 0 Then
+                
+                    'Formating color code red
+                    ws.Cells(TickerSymbolCount, 12).Interior.ColorIndex = 3
+                
+                    Else
+                
+                    'Formating color code green
+                    ws.Cells(TickerSymbolCount, 12).Interior.ColorIndex = 4
+                
+                    End If
+                    
+                    'Calculating and printing percent change
+                    If ws.Cells(j, 3).Value <> 0 Then
+                    percentchange = ((ws.Cells(i, 6).Value - ws.Cells(j, 3).Value) / ws.Cells(j, 3).Value)
+                    
+                    'Setting values as Percent
+                    ws.Cells(TickerSymbolCount, 13).Value = Format(percentchange, "Percent")
+                
+                    Else
+                    
+                    ws.Cells(TickerSymbolCount, 13).Value = Format(0, "Percent")
+                    
+                    End If
+                    
+                'Calculating and printing total stock volume
+                ws.Cells(TickerSymbolCount, 14).Value = WorksheetFunction.Sum(Range(ws.Cells(j, 7), ws.Cells(i, 7)))
+                
+                'Assigning TickerSymbolCount by 1
+                TickerSymbolCount = TickerSymbolCount + 1
+                
+                'Set new start row of the TickerSymbolCount
+                j = i + 1
+                
+                End If
+        
+                
+           
+           Next i
+
+'The Challenge
+
+        Ticker_total = ws.Cells(Rows.Count, 11).End(xlUp).Row
+            
+            'Assigning Finding printing values respectively
+        GreatTotVol = ws.Cells(2, 14).Value
+        Greatperincr = ws.Cells(2, 13).Value
+        GreatperDecr = ws.Cells(2, 13).Value
+        
+        
+        For i = 2 To Ticker_total
+        
+                    
+                If ws.Cells(i, 14).Value > GreatTotVol Then
+                GreatTotVol = ws.Cells(i, 14).Value
+                ws.Cells(4, 18).Value = ws.Cells(i, 11).Value
+                
+                Else
+                
+                GreatTotVol = GreatTotVol
+                
+                End If
+                
+                
+                If ws.Cells(i, 13).Value > Greatperincr Then
+                Greatperincr = ws.Cells(i, 13).Value
+                ws.Cells(2, 18).Value = ws.Cells(i, 11).Value
+                
+                Else
+                
+                Greatperincr = Greatperincr
+                
+                End If
+                
+                
+                If ws.Cells(i, 13).Value < GreatperDecr Then
+                GreatperDecr = ws.Cells(i, 13).Value
+                ws.Cells(3, 18).Value = ws.Cells(i, 11).Value
+                
+                Else
+                
+                GreatperDecr = GreatperDecr
+                
+                End If
+                
+          
+            ws.Cells(2, 19).Value = Format(Greatperincr, "Percent")
+            ws.Cells(3, 19).Value = Format(GreatperDecr, "Percent")
+            ws.Cells(4, 19).Value = Format(GreatTotVol, "Scientific")
+            
+            
+            
+        Next i
+        
+    'Formatting worksheet and workbook
+     Worksheets(WorksheetName).Columns("A:S").AutoFit
+     ws.Cells(2, 9).NumberFormat = "0.00%"
+     ws.Cells(3, 19).NumberFormat = "0.00%"
+
+  Next ws
+
+End Sub
+
+
+
+
+
+
+
